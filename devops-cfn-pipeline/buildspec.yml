@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+  pre_build:
+    commands:
+      - echo "*** Checking if Python is installed ***"
+      - python3 --version
+      - echo "*** Checking if Pip3 is installed ***"
+      - pip3 --version
+      - echo "*** Installing cfn-lint ***"
+      - pip3 install cfn-lint
+      - echo "*** Checking if cfn-lint is installed ***"
+      - cfn-lint --version
+  build:
+    commands:
+      - echo "*** Build started on `date` ***"
+      - cfn-lint cfn-apache-project.yml
+      - echo "*** Building cfn template ***"
+      - aws cloudformation package --template-file cfn-apache-project.yml --s3-bucket my-deployed-artifacts-1212 --output-template-file output-cfn.yml
+  post_build:
+    commands:
+      - echo "*** Build completed at `date` ***"
+
+artifacts:
+  files:
+    - output-cfn.yml
+
+    
